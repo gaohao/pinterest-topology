@@ -6,15 +6,14 @@ import json
 
 class ViningSpout(storm.Spout):  
     def initialize(self, conf, context):
-        pass
+        self.url_animals_tl = 'http://www.pinterest.com/all/animals/'
+        self.category = 'animals'
     
     def nextTuple(self):
         try:       
-            url_animals_tl = 'http://www.pinterest.com/all/animals/'
-            pin_prefix = 'http://www.pinterest.com/pin/'
-            category = 'animals'
+            
 
-            html = urllib2.urlopen(url_animals_tl).read()
+            html = urllib2.urlopen(self.url_animals_tl).read()
             soup = BeautifulSoup(html)
             scripts = soup.find_all('script')
             code = scripts[len(scripts) - 1]
@@ -36,7 +35,7 @@ class ViningSpout(storm.Spout):
                     images = pin['data']['images']
                     if 'orig' in images:
                         pass
-                    storm.emit([pin_id, orig_link, orig_host, json.dumps(pin, indent=4, sort_keys=True), category])
+                    storm.emit([pin_id, orig_link, orig_host, json.dumps(pin, indent=4, sort_keys=True), self.category])
                 
             time.sleep(2)
         except StopIteration:
