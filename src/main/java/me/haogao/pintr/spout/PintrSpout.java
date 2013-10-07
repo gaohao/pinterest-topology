@@ -16,7 +16,7 @@ public class PintrSpout extends ShellSpout implements IRichSpout {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    	declarer.declare(new Fields("pin_id", "orig_link", "orig_host", "pin_json"));
+    	declarer.declare(new Fields("pin_id", "orig_link", "orig_host", "pin_json", "category"));
     }
     
     @Override

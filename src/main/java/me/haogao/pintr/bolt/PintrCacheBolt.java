@@ -31,8 +31,8 @@ public class PintrCacheBolt extends BaseRichBolt{
 	@Override
 	public void prepare(Map stormConf, TopologyContext context,
 			OutputCollector collector) {
-		this.jedisPool = new JedisPool(this.host, this.port);
-		this.jedis = jedisPool.getResource();
+		jedisPool = new JedisPool(this.host, this.port);
+		jedis = jedisPool.getResource();
 		logger = LogManager.getLogger(PintrCacheBolt.class.getName());
 	}
 
@@ -42,17 +42,27 @@ public class PintrCacheBolt extends BaseRichBolt{
 		String orig_link = (String) input.getValue(1);
 		String orig_host = (String) input.getValue(2);
 		String pin_json = (String) input.getValue(3);
+		String category = (String) input.getValue(4);
 		
 		String allPinsKey = "pintr:pins";
-		String origHostKey = "pintr:orig:host";
+		String allPinIdsKeyInCategory = allPinsKey + ":ids:" + category;
+		String origHostPrefix = "pintr:orig:host" + ":" + category;
+		String origHostToPinsKey = origHostPrefix + ":" + orig_host;
+		String origHostRankKey = origHostPrefix + ":" + "rank";
 
-		if (!this.jedis.hexists(allPinsKey, pin_id)) {
-			this.jedis.hset(allPinsKey, pin_id, pin_json);
+		// add new pin to pintr:pins
+		if (!jedis.hexists(allPinsKey, pin_id)) {
+			jedis.hset(allPinsKey, pin_id, pin_json);
+		} 
 
-			this.jedis.zadd(origHostKey, 1, orig_host);
-		} else {
-			this.jedis.zincrby(origHostKey, 1, orig_host);
-		}
+		// add new pin id to pintr:pins:ids
+		if (!jedis.sismember(allPinIdsKeyInCategory, pin_id)) {
+			jedis.sadd(allPinIdsKeyInCategory, pin_id);
+			jedis.sadd(origHostToPinsKey, pin_id);
+			jedis.zadd(origHostRankKey, 
+				jedis.scard(origHostToPinsKey), 
+				orig_host);
+		} 
 	}
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
@@ -61,9 +71,9 @@ public class PintrCacheBolt extends BaseRichBolt{
 	
 	@Override
 	public void cleanup() {
-		if (this.jedisPool != null ) {
-			this.jedisPool.returnResource(this.jedis);
-			this.jedisPool.destroy();
+		if (jedisPool != null ) {
+			jedisPool.returnResource(jedis);
+			jedisPool.destroy();
 		}
 	}
 	

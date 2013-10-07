@@ -24,7 +24,7 @@ public class PintrTopology {
         builder.setSpout("spout", new PintrSpout(), 1);
         
         builder.setBolt("bolt", new PintrCacheBolt("localhost", 6379), 12)
-                 .fieldsGrouping("spout", new Fields("pin_id"));
+                 .fieldsGrouping("spout", new Fields("category"));
 
         Config conf = new Config();
         conf.setDebug(false);

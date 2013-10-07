@@ -3,11 +3,10 @@ from urlparse import urlparse
 import urllib2
 import json
 
-url_all_tl = 'http://www.pinterest.com/all/'
 url_animals_tl = 'http://www.pinterest.com/all/animals/'
 pin_prefix = 'http://www.pinterest.com/pin/'
  
-html = urllib2.urlopen(url_all_tl).read()
+html = urllib2.urlopen(url_animals_tl).read()
 soup = BeautifulSoup(html)
 scripts = soup.find_all('script')
 code = scripts[len(scripts) - 1]
@@ -31,4 +30,3 @@ if i != -1:
         if 'orig' in images:
             print 'orig', images['orig']['url']
         print "\n"
-    #print json_str

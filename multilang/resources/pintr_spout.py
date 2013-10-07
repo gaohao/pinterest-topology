@@ -10,11 +10,11 @@ class ViningSpout(storm.Spout):
     
     def nextTuple(self):
         try:       
-            url_all_tl = 'http://www.pinterest.com/all/'
             url_animals_tl = 'http://www.pinterest.com/all/animals/'
             pin_prefix = 'http://www.pinterest.com/pin/'
- 
-            html = urllib2.urlopen(url_all_tl).read()
+            category = 'animals'
+
+            html = urllib2.urlopen(url_animals_tl).read()
             soup = BeautifulSoup(html)
             scripts = soup.find_all('script')
             code = scripts[len(scripts) - 1]
@@ -28,17 +28,15 @@ class ViningSpout(storm.Spout):
                 pins = json_obj['tree']['children'][3]['children'][0]['children'][0]['children']
                 
                 for pin in pins:
+                    pin_id = pin['options']['pin_id']
                     if 'module' in pin['children'][1]['options']:
                         module = pin['children'][1]['options']['module']
-                        #print 'pin desciption', module['options']['pin_description']
-                    #print 'pin id', pin_prefix + pin['options']['pin_id']
                     orig_link = pin['data']['link']
                     orig_host = urlparse(pin['data']['link']).hostname
                     images = pin['data']['images']
                     if 'orig' in images:
-                        #print 'orig', images['orig']['url']
                         pass
-                    storm.emit([pin['options']['pin_id'], orig_link, orig_host, json.dumps(pin, indent=4, sort_keys=True)])
+                    storm.emit([pin_id, orig_link, orig_host, json.dumps(pin, indent=4, sort_keys=True), category])
                 
             time.sleep(2)
         except StopIteration:
