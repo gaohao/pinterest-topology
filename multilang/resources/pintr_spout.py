@@ -10,9 +10,7 @@ class ViningSpout(storm.Spout):
         self.category = 'animals'
     
     def nextTuple(self):
-        try:       
-            
-
+        try: 
             html = urllib2.urlopen(self.url_animals_tl).read()
             soup = BeautifulSoup(html)
             scripts = soup.find_all('script')
