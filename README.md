@@ -20,3 +20,15 @@ source venv/bin/activate
 mvn -f pom.xml compile exec:java -Dexec.classpathScope=compile -Dexec.mainClass=me.haogao.pintr.topology.PintrTopology  
 </pre>
 
+6. Query
+<pre>
+zrevrange pintr:orig:host:animals:rank 0 9 withscores  
+</pre>
+
+<pre>
+smembers pintr:orig:host:animals:www.flickr.com  
+</pre>
+
+<pre>
+scard pintr:pins:ids:animals
+</pre>
