@@ -1,10 +1,6 @@
-package me.haogao.vining.bolt;
+package me.haogao.pintr.bolt;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,14 +8,13 @@ import org.apache.logging.log4j.Logger;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 
-public class ViningShellCacheBolt extends BaseRichBolt{
+public class PintrCacheBolt extends BaseRichBolt{
 
 	private static final long serialVersionUID = 5161826509198496313L;
 	private String host;
@@ -28,7 +23,7 @@ public class ViningShellCacheBolt extends BaseRichBolt{
 	private Jedis jedis= null;
 	private static Logger logger;
 	
-	public ViningShellCacheBolt(String host, int port) {
+	public PintrCacheBolt(String host, int port) {
 		this.host = host;
 		this.port = port;
 	}
@@ -38,15 +33,26 @@ public class ViningShellCacheBolt extends BaseRichBolt{
 			OutputCollector collector) {
 		this.jedisPool = new JedisPool(this.host, this.port);
 		this.jedis = jedisPool.getResource();
-		logger = LogManager.getLogger(ViningShellCacheBolt.class.getName());
+		logger = LogManager.getLogger(PintrCacheBolt.class.getName());
 	}
 
 	@Override
 	public void execute(Tuple input) {
-		String link = (String) input.getValue(0);
-		String key = "vine:link";
-		this.jedis.sadd(key, link);
-		//logger.info(link);
+		String pin_id = (String) input.getValue(0);
+		String orig_link = (String) input.getValue(1);
+		String orig_host = (String) input.getValue(2);
+		String pin_json = (String) input.getValue(3);
+		
+		String allPinsKey = "pintr:pins";
+		String origHostKey = "pintr:orig:host";
+
+		if (!this.jedis.hexists(allPinsKey, pin_id)) {
+			this.jedis.hset(allPinsKey, pin_id, pin_json);
+
+			this.jedis.zadd(origHostKey, 1, orig_host);
+		} else {
+			this.jedis.zincrby(origHostKey, 1, orig_host);
+		}
 	}
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {

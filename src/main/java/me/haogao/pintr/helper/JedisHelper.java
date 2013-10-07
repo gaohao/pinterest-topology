@@ -1,4 +1,4 @@
-package me.haogao.vining.helper;
+package me.haogao.pintr.helper;
 
 import redis.clients.jedis.JedisPool;
 
