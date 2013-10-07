@@ -1,4 +1,4 @@
-vining
+pintr
 =======
 1. Install maven3 first  
 
@@ -17,8 +17,7 @@ source venv/bin/activate
 
 5. Run the topology  
 <pre>
-mvn -f pom.xml compile exec:java -Dexec.classpathScope=compile -Dexec.mainClass=me.haogao.vining.topology.ViningShellTopology    
-mvn -f pom.xml compile exec:java -Dexec.classpathScope=compile -Dexec.mainClass=me.haogao.vining.topology.ViningTweepyTopology  
+mvn -f pom.xml compile exec:java -Dexec.classpathScope=compile -Dexec.mainClass=me.haogao.pintr.topology.PintrTopology  
 </pre>
 
 How configure on Ubuntu:  
