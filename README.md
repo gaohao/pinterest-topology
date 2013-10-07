@@ -20,16 +20,15 @@ source venv/bin/activate
 mvn -f pom.xml compile exec:java -Dexec.classpathScope=compile -Dexec.mainClass=me.haogao.pintr.topology.PintrTopology  
 </pre>
 
-How configure on Ubuntu:  
+6. Query
+  <pre>
+  zrevrange pintr:orig:host:animals:rank 0 9 withscores  
+  </pre>
 
-Install maven 3  
-http://yarovoy.com/post/14363197336/maven-how-to-install-maven-3-on-ubuntu-11-10  
-
-Install pip  
-http://www.saltycrane.com/blog/2010/02/how-install-pip-ubuntu/  
-
-Problems:  
-1. locale.Error: unsupported locale setting  
-  Sudo locale-gen en_US.UTF-8  
-2. For long run  
-  Use nohup  
+  <pre>
+  smembers pintr:orig:host:animals:www.flickr.com  
+  </pre>
+  
+  <pre>
+  scard pintr:pins:ids:animals
+  </pre>
