@@ -51,9 +51,9 @@ public class PintrCacheBolt extends BaseRichBolt{
 		String origHostRankKey = origHostPrefix + ":" + "rank";
 
 		// add new pin to pintr:pins
-		if (!jedis.hexists(allPinsKey, pin_id)) {
-			jedis.hset(allPinsKey, pin_id, pin_json);
-		} 
+		//if (!jedis.hexists(allPinsKey, pin_id)) {
+		//	jedis.hset(allPinsKey, pin_id, pin_json);
+		//} 
 
 		// add new pin id to pintr:pins:ids
 		if (!jedis.sismember(allPinIdsKeyInCategory, pin_id)) {
